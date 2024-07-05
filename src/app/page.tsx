@@ -1,53 +1,48 @@
-import Link from "next/link";
+'use client';
+import { useState } from "react";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { formatTextToHTML } from "../../utils";
+
+const API_KEY = 'AIzaSyAToJYIarf5AcYs09uppYeZYeSuAhw4msw';
 
 export default function Home() {
+  const [result, setResult] = useState<string>("Empty");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [prompt, setPrompt] = useState<string>("Tạo 3 số ngẫu nhiên từ 1 đến 78. Tiếp theo, tra cứu các lá bài tarot tương ứng và ý nghĩa của chúng. Cuối cùng, đưa ra một giải bài tổng thể cho tôi, dựa trên 3 lá bài.");
+
+  const handleSendPromptToGemini = async (prompt: string) => {
+    setIsLoading(true);
+    try {
+      const genAI = new GoogleGenerativeAI(API_KEY)
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" })
+
+      const result = await model.generateContent(prompt)
+      const response = result.response
+      const text = response.text()
+
+      setResult(formatTextToHTML(text))
+    } catch (error) {
+      setResult('Failed to fetch response.')
+    }
+    setIsLoading(false)
+  }
+
+  const handleReadCards = async () => {
+    await handleSendPromptToGemini(prompt);
+  }
+
   return (
     <main className="content">
-      <h1 className="heading">Next.js on Firebase App Hosting</h1>
+      <h1 className="heading">Demo Tarot</h1>
 
       <section className="features">
         <article className="card">
-          <h2>Scalable, serverless backends</h2>
-          <p>
-            Dynamic content is served by{" "}
-            <Link
-              href="https://cloud.google.com/run/docs/overview/what-is-cloud-run"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Cloud Run
-            </Link>
-            , a fully managed container that scales up and down with demand.
-            Visit{" "}
-            <Link href="/ssr">
-              <code>/ssr</code>
-            </Link>{" "}
-            and{" "}
-            <Link href="/ssr/streaming">
-              <code>/ssr/streaming</code>
-            </Link>{" "}
-            to see the server in action.
-          </p>
-        </article>
-        <article className="card">
-          <h2>Global CDN</h2>
-          <p>
-            Cached content is served by{" "}
-            <Link
-              href="https://cloud.google.com/cdn/docs/overview"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Google Cloud CDN
-            </Link>
-            , a fast and secure way to host cached content globally. Visit
-            <Link href="/ssg">
-              {" "}
-              <code>/ssg</code>
-            </Link>{" "}
-          </p>
+          <h2>Kết quả trải bài từ Gemini API</h2>
+          <div dangerouslySetInnerHTML={{ __html: result }} />
         </article>
       </section>
+
+      <button disabled={isLoading} onClick={() => handleReadCards()}>Trải bài</button>
     </main>
   );
 }
