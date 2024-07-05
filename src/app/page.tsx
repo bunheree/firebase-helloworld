@@ -3,7 +3,7 @@ import { useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { formatTextToHTML } from "../../utils";
 
-const API_KEY = 'AIzaSyAToJYIarf5AcYs09uppYeZYeSuAhw4msw';
+const API_KEY = '';
 
 export default function Home() {
   const [result, setResult] = useState<string>("Empty");
