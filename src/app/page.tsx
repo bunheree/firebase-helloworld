@@ -1,9 +1,9 @@
 'use client';
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { formatTextToHTML } from "../../utils";
 
-const API_KEY = '';
+const API_KEY = 'AIzaSyAToJYIarf5AcYs09uppYeZYeSuAhw4msw';//process.env.API_KEY || '';
 
 export default function Home() {
   const [result, setResult] = useState<string>("Empty");
@@ -38,11 +38,15 @@ export default function Home() {
       <section className="features">
         <article className="card">
           <h2>Kết quả trải bài từ Gemini API</h2>
-          <div dangerouslySetInnerHTML={{ __html: result }} />
+          {isLoading ? (
+            <p>Loading...</p>
+          ) : (
+            <div dangerouslySetInnerHTML={{ __html: result }} />
+          )}
         </article>
       </section>
 
-      <button disabled={isLoading} onClick={() => handleReadCards()}>Trải bài</button>
+      <button disabled={isLoading} onClick={handleReadCards}>Trải bài</button>
     </main>
   );
 }
